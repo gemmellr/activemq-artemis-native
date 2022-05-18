@@ -26,6 +26,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is used as an aggregator for the {@link LibaioFile}.
  * <br>
@@ -42,6 +45,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
 
+   private static final Logger logger = LoggerFactory.getLogger(LibaioContext.class);
    private static final AtomicLong totalMaxIO = new AtomicLong(0);
 
    /**
@@ -63,13 +67,13 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
       try {
          System.loadLibrary(name);
          if (getNativeVersion() != EXPECTED_NATIVE_VERSION) {
-            NativeLogger.LOGGER.incompatibleNativeLibrary();
+            NativeLogger.incompatibleNativeLibrary();
             return false;
          } else {
             return true;
          }
       } catch (Throwable e) {
-         NativeLogger.LOGGER.debug(name + " -> error loading the native library", e);
+         logger.debug(name + " -> error loading the native library", e);
          return false;
       }
 
@@ -93,12 +97,12 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
             });
             break;
          } else {
-            NativeLogger.LOGGER.debug("Library " + library + " not found!");
+            logger.debug("Library " + library + " not found!");
          }
       }
 
       if (!loaded) {
-         NativeLogger.LOGGER.debug("Couldn't locate LibAIO Wrapper");
+         logger.debug("Couldn't locate LibAIO Wrapper");
       }
    }
 
@@ -242,7 +246,7 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
             try {
                ioSpace.tryAcquire(queueSize, 10, TimeUnit.SECONDS);
             } catch (Exception e) {
-               NativeLogger.LOGGER.error(e);
+               logger.error(e.getMessage(), e);
             }
          }
          totalMaxIO.addAndGet(-queueSize);

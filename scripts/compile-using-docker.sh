@@ -22,6 +22,7 @@ docker run --rm -v $PWD/target/lib:/work/target/lib artemis-native-builder "$@"
 #podman run --rm -v $PWD/target/lib:/work/target/lib:Z artemis-native-builder "$@"
 chown -Rv $USER:$GID ./bin
 ls -liat ./target/lib
+#TODO: I had to manually create ./target/lib before I could run this..
 
 # Note: You may need to authorize docker to map folder at your folder structure
 #docker build -f src/main/docker/Dockerfile-centos -t artemis-native-builder . && docker run -it --rm -v $PWD/target/lib:/work/target/lib artemis-native-builder bash

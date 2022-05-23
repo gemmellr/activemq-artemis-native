@@ -260,7 +260,7 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
    }
 
    @Override
-   protected void finalize() throws Throwable {
+   protected void finalize() throws Throwable { //TODO: remove?
       super.finalize();
       close();
    }

@@ -20,7 +20,7 @@
     <groupId>org.apache.activemq</groupId>
     <artifactId>activemq-artemis-native</artifactId>
     <packaging>bundle</packaging>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <parent>
         <groupId>org.apache</groupId>
@@ -42,14 +42,16 @@
         <junit.version>4.13.2</junit.version>
         <maven.bundle.plugin.version>5.1.2</maven.bundle.plugin.version>
         <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
 
         <test.stress.time>5000</test.stress.time>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <!-- See also maven.compiler.release in the java9on profile -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
         <activemq-surefire-argline>
             -Dtest.stress.time=${test.stress.time} -Djava.library.path="${activemq.basedir}/target/lib/linux-${os.arch}"
@@ -177,7 +179,7 @@
             </build>
         </profile>
         <profile>
-            <id>dev</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -196,40 +198,20 @@
             </build>
         </profile>
         <profile>
-            <id>release</id>
+            <id>dev</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>enforce-java-version</id>
+                                <phase>compile</phase>
                                 <goals>
-                                    <goal>enforce</goal>
+                                    <goal>check</goal>
                                 </goals>
-                                <configuration>
-                                    <rules>
-                                         <requireJavaVersion>
-                                             <version>[11, 12)</version>
-                                             <message>JDK 11 is required when building the release</message>
-                                         </requireJavaVersion>
-                                    </rules>
-                                </configuration>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                       <groupId>org.apache.rat</groupId>
-                       <artifactId>apache-rat-plugin</artifactId>
-                       <executions>
-                          <execution>
-                             <phase>compile</phase>
-                             <goals>
-                                <goal>check</goal>
-                             </goals>
-                          </execution>
-                       </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -254,7 +236,17 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>java9on</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
+        </profile>
     </profiles>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -286,6 +278,11 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>${exec-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.rat</groupId>
@@ -342,6 +339,40 @@
 
                         </excludes>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>enforce-java-version</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireJavaVersion>
+                                    <version>[1.8,)</version>
+                                    <message>You must use Java 8+ to build</message>
+                                    </requireJavaVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>enforce-maven-version</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                    <version>3.5.0</version>
+                                    <message>You must use Maven 3.5.0+ to build</message>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

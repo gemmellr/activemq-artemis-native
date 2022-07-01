@@ -16,22 +16,40 @@
  */
 package org.apache.activemq.artemis.nativo.jlibaio;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-/**
- * Logger Code 16
- */
 public class NativeLogger {
 
-   private static final Logger logger = LoggerFactory.getLogger(NativeLogger.class.getPackage().getName());
-
    public static final String PROJECT_PREFIX = "jlibaio";
+
+   private static LoggerCallback loggerCallback = new SystemCallback();
+
+   public static void setLoggerCallback(LoggerCallback callback) {
+      loggerCallback = callback;
+   }
 
    private static final int DIFFERENT_VERSION_ID = 163001;
    private static final String DIFFERENT_VERSION = PROJECT_PREFIX + DIFFERENT_VERSION_ID + " You have a native library with a different version than expected";
 
    public final static void incompatibleNativeLibrary() {
-       logger.warn(DIFFERENT_VERSION);
+       warn(DIFFERENT_VERSION);
+   }
+
+   public final static void info(String message) {
+      loggerCallback.info(message);
+   }
+
+   public final static void warn(String message) {
+      loggerCallback.warn(message);
+   }
+
+   public final static void warn(String message, Throwable e) {
+      loggerCallback.warn(message, e);
+   }
+
+   public final static void debug(String message) {
+      loggerCallback.debug(message);
+   }
+
+   public final static void debug(String message, Throwable e) {
+      loggerCallback.debug(message, e);
    }
 }

@@ -26,9 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class is used as an aggregator for the {@link LibaioFile}.
  * <br>
@@ -45,7 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
 
-   private static final Logger logger = LoggerFactory.getLogger(LibaioContext.class);
    private static final AtomicLong totalMaxIO = new AtomicLong(0);
 
    /**
@@ -73,7 +69,7 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
             return true;
          }
       } catch (Throwable e) {
-         logger.debug(name + " -> error loading the native library", e);
+         NativeLogger.debug(name + " -> error loading the native library", e);
          return false;
       }
 
@@ -97,12 +93,12 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
             });
             break;
          } else {
-            logger.debug("Library " + library + " not found!");
+            NativeLogger.debug("Library " + library + " not found!");
          }
       }
 
       if (!loaded) {
-         logger.debug("Couldn't locate LibAIO Wrapper");
+         NativeLogger.debug("Couldn't locate LibAIO Wrapper");
       }
    }
 
@@ -246,7 +242,7 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
             try {
                ioSpace.tryAcquire(queueSize, 10, TimeUnit.SECONDS);
             } catch (Exception e) {
-               logger.error(e.getMessage(), e);
+               NativeLogger.warn(e.getMessage(), e);
             }
          }
          totalMaxIO.addAndGet(-queueSize);

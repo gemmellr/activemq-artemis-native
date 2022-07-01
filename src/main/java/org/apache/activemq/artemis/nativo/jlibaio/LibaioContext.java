@@ -255,11 +255,6 @@ public class LibaioContext<Callback extends SubmitInfo> implements Closeable {
       }
    }
 
-   @Override
-   protected void finalize() throws Throwable { //TODO: remove?
-      super.finalize();
-      close();
-   }
 
    /**
     * It will open a file. If you set the direct flag = false then you won't need to use the special buffer.

@@ -50,8 +50,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- See also maven.compiler.release in the java9on profile -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
 
         <activemq-surefire-argline>
             -Dtest.stress.time=${test.stress.time} -Djava.library.path="${activemq.basedir}/target/lib/linux-${os.arch}"
@@ -222,15 +222,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>java9on</id>
-            <activation>
-                <jdk>[9,)</jdk>
-            </activation>
-            <properties>
-                <maven.compiler.release>8</maven.compiler.release>
-            </properties>
-        </profile>
     </profiles>
 
     <build>
@@ -368,9 +359,6 @@
             </resource>
         </resources>
         <plugins>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-help-plugin</artifactId>
@@ -516,6 +504,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
